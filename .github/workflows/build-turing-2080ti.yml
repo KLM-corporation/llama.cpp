@@ -1,0 +1,54 @@
+name: Build Turing RTX 2080 Ti
+
+on:
+  push:
+    branches: [turing-2080ti-opti]
+    tags: [v1.0-turing-2080ti]
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build-turing:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CUDA 12.4
+        uses: Jimver/cuda-toolkit@v0.2.19
+        with:
+          cuda: '12.4.0'
+          method: 'network'
+      - name: Install deps
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake ninja-build libcurl4-openssl-dev ccache
+      - name: Configure Turing 75
+        run: |
+          cmake -B build -G Ninja \
+            -DGGML_CUDA=ON \
+            -DCMAKE_CUDA_ARCHITECTURES="75" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_NATIVE=OFF \
+            -DLLAMA_CURL=ON \
+            -DCMAKE_CUDA_FLAGS="--use_fast_math -Xptxas=-O3 -Xptxas=--allow-expensive-optimizations=true" \
+            -DCMAKE_CXX_FLAGS="-O3"
+      - name: Build
+        run: cmake --build build --config Release -j$(nproc)
+      - name: Package
+        run: |
+          mkdir -p dist
+          cp build/bin/llama-* dist/ 2>/dev/null || cp build/bin/* dist/
+          cp build/lib*.so* dist/ 2>/dev/null || true
+          tar -czf llama-cpp-turing-2080ti-ubuntu-cuda12.4-$(git rev-parse --short HEAD).tar.gz -C build bin
+          ls -lh dist/ | head -n 20
+          ls -lh *.tar.gz
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: llama-cpp-turing-*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: llama-cpp-turing-2080ti
+          path: build/bin/*
