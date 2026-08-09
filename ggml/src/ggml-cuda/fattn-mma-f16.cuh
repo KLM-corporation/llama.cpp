@@ -88,54 +88,21 @@ static constexpr __host__ __device__ fattn_mma_config ggml_cuda_fattn_mma_get_co
 }
 
 static constexpr __host__ __device__ fattn_mma_config ggml_cuda_fattn_mma_get_config_turing(const int DKQ, const int DV, const int ncols) {
-    // Opti RTX 2080 Ti (Turing 7.5) : 68 SM, pas de cp.async HW, 64KB shared/SM
-    // -> nstages_target=1 partout (vs 2 sur Ampere), nthreads réduit pour petites batch, occupancy boostée 2->3
-    // Tuning pour 11GB : nbatch plus petits pour contenir KV cache sans spilling
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 64,  64,  8,  64, 3,  64,  32,  32,  32, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 64,  64, 16, 128, 2,  32,  32,  32,  32, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 64,  64, 32, 128, 2,  32,  32,  32,  32, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 64,  64, 64, 128, 2,  32,  32,  32,  32, 1, true);
-
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 80,  80,  8,  64, 3,  64,  40,  40,  40, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 80,  80, 16, 128, 2,  32,  40,  40,  40, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 80,  80, 32, 128, 2,  32,  40,  40,  40, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 80,  80, 64, 128, 2,  32,  40,  40,  40, 1, true);
-
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 96,  96,  8,  64, 3,  64,  48,  48,  48, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 96,  96, 16, 128, 2,  32,  48,  48,  48, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 96,  96, 32, 128, 2,  32,  48,  48,  48, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE( 96,  96, 64, 128, 2,  32,  48,  48,  48, 1, true);
-
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(112, 112,  8,  64, 3,  64,  56,  56,  56, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(112, 112, 16, 128, 2,  32,  56,  56,  56, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(112, 112, 32, 128, 2,  32,  56,  56,  56, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(112, 112, 64, 128, 2,  32,  56,  56,  56, 1, true);
-
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(128, 128,  8,  64, 3,  64,  64,  64,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(128, 128, 16, 128, 2,  32,  64,  64,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(128, 128, 32, 128, 2,  32,  64,  64,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(128, 128, 64, 128, 2,  32,  64,  64,  64, 1, true);
-
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(192, 128,  8,  64, 3,  32,  96,  64,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(192, 128, 16,  64, 3,  32,  96,  64,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(192, 128, 32, 128, 2,  32,  96,  64,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(192, 128, 64, 128, 2,  32,  96,  64,  64, 1, true);
-
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256,  8,  64, 3,  32, 128, 128,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256, 16,  64, 3,  32, 128, 128,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256, 32, 128, 2,  32, 128, 128,  64, 1, true);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256, 64, 128, 2,  32, 128, 128,  64, 1, true);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256,  8, 128, 2,  64, 128, 128, 128, 2, true);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256, 16, 128, 2,  64, 128, 128, 128, 2, true);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256, 32, 128, 2,  64, 128, 128,  64, 2, true);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(256, 256, 64, 128, 2,  64, 128, 128,  64, 2, true);
 
     GGML_CUDA_FATTN_MMA_CONFIG_CASE(320, 256, 32, 128, 2,  32, 128, 128, 128, 1, false);
     GGML_CUDA_FATTN_MMA_CONFIG_CASE(320, 256, 64, 256, 1,  32, 128, 128, 128, 1, false);
 
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(512, 512,  8,  64, 3,  32,  96,  64, 128, 1, false);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(512, 512, 16,  64, 3,  32,  96,  64, 128, 1, false);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(512, 512,  8,  64, 4,  32,  96,  64, 128, 1, false);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(512, 512, 16,  64, 4,  32,  96,  64, 128, 1, false);
     GGML_CUDA_FATTN_MMA_CONFIG_CASE(512, 512, 32, 128, 2,  32, 128, 128, 128, 1, false);
     GGML_CUDA_FATTN_MMA_CONFIG_CASE(512, 512, 64, 256, 1,  32, 128, 128, 128, 1, false);
 
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(576, 512,  8,  64, 3,  32,  96,  64, 128, 1, false);
-    GGML_CUDA_FATTN_MMA_CONFIG_CASE(576, 512, 16,  64, 3,  32,  96,  64, 128, 1, false);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(576, 512,  8,  64, 4,  32,  96,  64, 128, 1, false);
+    GGML_CUDA_FATTN_MMA_CONFIG_CASE(576, 512, 16,  64, 4,  32,  96,  64, 128, 1, false);
     GGML_CUDA_FATTN_MMA_CONFIG_CASE(576, 512, 32, 128, 2,  32, 160, 128, 128, 1, false);
     GGML_CUDA_FATTN_MMA_CONFIG_CASE(576, 512, 64, 256, 1,  32, 160, 128, 128, 1, false);
 
