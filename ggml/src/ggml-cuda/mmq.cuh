@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common.cuh"
-#include "lut-turing.cuh" // V3 LUT-INT8 Turing
+#include "lut-turing.cuh" // V4 LUT-INT8 Turing - BRANCHE Q1_0
 
 #include <climits>
 #include <cstdint>

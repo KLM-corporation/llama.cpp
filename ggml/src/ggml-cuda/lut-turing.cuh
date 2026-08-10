@@ -7,7 +7,7 @@ static constexpr int8_t kQ4K_LUT[16] = {-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7}
 #ifdef TURING_MMA_AVAILABLE
 static __device__ __forceinline__ int8_t lut_dequant_q1(int bit) { return kQ1_LUT[bit & 0x1]; }
 #endif
-static constexpr int kTuringInterleave = 8 // V3 perf test: interleave 4->8;
+static constexpr int kTuringInterleave = 16 // V4 bench visible // V3 perf test: interleave 4->8;
 
 // VRAIE LUT Q1_0 - FLUTE style : LUT 16 entrées pour __byte_perm + DP4A
 template <ggml_type type, int J, bool fallback>
